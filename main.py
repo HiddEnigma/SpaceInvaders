@@ -6,11 +6,12 @@ import sys
 # This class will contain the sprite sheets and the utility that governs them.
 class Game:
     def __init__(self):
-        player_sprite = Player((screen_width / 2, screen_height), screen_width, 5)
+        player_sprite = Player((screen_width / 2, screen_height), screen_width, screen_height, 5)
         self.player = pygame.sprite.GroupSingle(player_sprite)
 
     def run(self):
         self.player.update()
+        self.player.sprite.bullets.draw(screen)
         self.player.draw(screen)
 
 
