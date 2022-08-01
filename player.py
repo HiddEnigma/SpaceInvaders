@@ -3,7 +3,7 @@ from bullet import Bullet
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, position, screen_width, screen_height, player_speed):
+    def __init__(self, position, screen_width, player_speed):
         super().__init__()
 
         self.image = pygame.image.load("sprites/player.png").convert_alpha()
