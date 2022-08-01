@@ -6,10 +6,11 @@ import sys
 # This class will contain the sprite sheets and the utility that governs them.
 class Game:
     def __init__(self):
-        self.player_sprite = Player((screen_width / 2, screen_height))
-        self.player = pygame.sprite.GroupSingle()
+        player_sprite = Player((screen_width / 2, screen_height), screen_width, 5)
+        self.player = pygame.sprite.GroupSingle(player_sprite)
 
     def run(self):
+        self.player.update()
         self.player.draw(screen)
 
 
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     pygame.init()
 
     # Game Variables
-    screen_width = 800
+    screen_width = 600
     screen_height = 600
 
     screen = pygame.display.set_mode((screen_width, screen_height))
@@ -33,6 +34,8 @@ if __name__ == "__main__":
                 sys.exit()
 
         screen.fill((30, 30, 30))
+
         game.run()
+
         pygame.display.flip()
         clock.tick(60)
