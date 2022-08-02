@@ -1,12 +1,15 @@
 from player import Player
 from enemy import Enemy
+from bullet import Bullet
+from random import choice
+
 import obstacle
 import pygame
 import sys
 
 # Constants
 ENEMY_COLOURS = ["red", "yellow", "green"]
-
+ENEMY_TIMER = pygame.USEREVENT + 1
 
 # This class will contain the sprite sheets and the utility that governs them.
 class Game:
@@ -16,9 +19,10 @@ class Game:
         self.player = pygame.sprite.GroupSingle(player_sprite)
 
         # Initializes the obstacle objects and their sprites
+        self.obstacles = pygame.sprite.Group()
+
         self.shape = obstacle.obstacle_shape
         self.obstacle_size = 6
-        self.obstacles = pygame.sprite.Group()
         self.amount_of_obstacles = 4
         self.x_position_of_obstacles = [number * (screen_width / self.amount_of_obstacles)
                                         for number in range(self.amount_of_obstacles)]
@@ -27,6 +31,8 @@ class Game:
 
         # Initializes the Enemy objects and their sprites
         self.enemies = pygame.sprite.Group()
+        self.enemy_bullets = pygame.sprite.Group()
+
         self.enemy_factory(rows=6, columns=8)
         self.enemy_vector = 1
         self.enemy_offset_y = 6
@@ -65,16 +71,27 @@ class Game:
             for enemy in self.enemies.sprites():
                 enemy.rect.y += self.enemy_offset_y
 
+    def enemy_attack_engine(self):
+        if self.enemies:
+            enemy = choice(self.enemies.sprites())
+            enemy_bullet = Bullet(enemy.rect.center, 6, screen_height)
+            self.enemy_bullets.add(enemy_bullet)
+
+
 
     def run(self):
         self.player.update()
         self.enemies.update(self.enemy_vector)
         self.enemy_movement_engine()
+        self.enemy_bullets.update()
 
         self.player.sprite.bullets.draw(screen)
+        self.enemies.sprites
+
         self.player.draw(screen)
         self.obstacles.draw(screen)
         self.enemies.draw(screen)
+        self.enemy_bullets.draw(screen)
 
 
 if __name__ == "__main__":
@@ -89,12 +106,17 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     game = Game()
 
+    # A simple timing mechanic for the enemy shooting.
+    pygame.time.set_timer(ENEMY_TIMER, 500)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
                 sys.exit()
+            if event.type == ENEMY_TIMER:
+                game.enemy_attack_engine()
 
         screen.fill((30, 30, 30))
 
