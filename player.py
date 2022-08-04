@@ -10,6 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=position)
 
         self.speed = player_speed
+        self.health = 3
         self.x_constraint = screen_width
 
         self.ready_to_shoot = True
@@ -39,11 +40,6 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_SPACE] and self.ready_to_shoot:
             self.shoot()
 
-    def update(self):
-        self.get_input()
-        self.reload()
-        self.bullets.update()
-
     def shoot(self):
         self.ready_to_shoot = False
         self.time_to_shoot = pygame.time.get_ticks()
@@ -56,3 +52,11 @@ class Player(pygame.sprite.Sprite):
 
             if (current_time - self.time_to_shoot) >= self.shooting_cooldown:
                 self.ready_to_shoot = True
+
+    def is_damaged(self):
+        self.health -= 1
+
+    def update(self):
+        self.get_input()
+        self.reload()
+        self.bullets.update()

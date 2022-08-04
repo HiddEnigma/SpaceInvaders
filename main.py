@@ -1,7 +1,7 @@
 from player import Player
-from enemy import Enemy
+from enemy import Enemy, Mother
 from bullet import Bullet
-from random import choice
+from random import choice, randint
 
 import obstacle
 import pygame
@@ -11,7 +11,15 @@ import sys
 ENEMY_COLOURS = ["red", "yellow", "green"]
 ENEMY_TIMER = pygame.USEREVENT + 1
 
+MOTHER_SPAWNING_ORIGIN = ["left", "right"]
+
+
 # This class will contain the sprite sheets and the utility that governs them.
+def quit():
+    pygame.quit()
+    sys.exit()
+
+
 class Game:
     def __init__(self):
         # Initializes the player object and the player sprite
@@ -36,6 +44,10 @@ class Game:
         self.enemy_factory(rows=6, columns=8)
         self.enemy_vector = 1
         self.enemy_offset_y = 6
+
+        # Initializes the Mother objects and their sprites
+        self.mother = pygame.sprite.GroupSingle()
+        self.mother_spawning_time = randint(400, 800)
 
     def create_obstacles(self, *offset, starting_x, starting_y):
         for x_offset in offset:
@@ -77,21 +89,62 @@ class Game:
             enemy_bullet = Bullet(enemy.rect.center, 6, screen_height)
             self.enemy_bullets.add(enemy_bullet)
 
+    def mother_timer(self):
+        self.mother_spawning_time -= 1
 
+        if self.mother_spawning_time <= 0:
+            print("Mother should be spawning.")
+            self.mother_spawning_time = randint(400, 800)
+
+            self.mother.add(Mother(spawning_corner=choice(MOTHER_SPAWNING_ORIGIN), screen_width=screen_width))
+
+    def check_collision(self):
+        if self.player.sprite.bullets:
+            for bullet in self.player.sprite.bullets:
+                if pygame.sprite.spritecollide(bullet, self.obstacles, True):
+                    bullet.kill()
+
+                elif pygame.sprite.spritecollide(bullet, self.enemies, True):
+                    bullet.kill()
+
+                elif pygame.sprite.spritecollide(bullet, self.mother, True):
+                    bullet.kill()
+
+        if self.enemy_bullets:
+            for bullet in self.enemy_bullets:
+                if pygame.sprite.spritecollide(bullet, self.obstacles, True):
+                    bullet.kill()
+
+                elif pygame.sprite.spritecollide(bullet, self.player, False):
+                    bullet.kill()
+                    self.player.is_damaged()
+
+        if self.enemies:
+            for enemy in self.enemies:
+                if pygame.sprite.spritecollide(enemy, self.obstacles, True):
+                    enemy.kill()
+
+                if pygame.sprite.spritecollide(enemy, self.player, True):
+                    enemy.kill()
+                    exit()
 
     def run(self):
         self.player.update()
         self.enemies.update(self.enemy_vector)
         self.enemy_movement_engine()
         self.enemy_bullets.update()
+        self.mother_timer()
+        self.mother.update()
+
+        self.check_collision()
 
         self.player.sprite.bullets.draw(screen)
-        self.enemies.sprites
 
         self.player.draw(screen)
         self.obstacles.draw(screen)
         self.enemies.draw(screen)
         self.enemy_bullets.draw(screen)
+        self.mother.draw(screen)
 
 
 if __name__ == "__main__":
@@ -112,9 +165,8 @@ if __name__ == "__main__":
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                exit()
 
-                sys.exit()
             if event.type == ENEMY_TIMER:
                 game.enemy_attack_engine()
 
