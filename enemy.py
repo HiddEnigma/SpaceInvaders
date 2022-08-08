@@ -9,6 +9,13 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.image.load(self.file_path).convert_alpha()
         self.rect = self.image.get_rect(topleft=(x, y))
 
+        if colour == "red":
+            self.value = 10
+        elif colour == "green":
+            self.value = 20
+        elif colour == "yellow":
+            self.value = 30
+
     def update(self, vector):
         self.rect.x += vector
 
@@ -18,6 +25,7 @@ class Mother(pygame.sprite.Sprite):
         super(Mother, self).__init__()
 
         self.image = pygame.image.load("sprites/mother.png").convert_alpha()
+
         if spawning_corner == "right":
             x = screen_width + 50
             self.speed = -3
@@ -25,7 +33,9 @@ class Mother(pygame.sprite.Sprite):
             x = -50
             self.speed = 3
 
-        self.rect = self.image.get_rect(topleft=(x, 20))
+        self.value = 100
+
+        self.rect = self.image.get_rect(topleft=(x, 40))
 
     def update(self):
         self.rect.x += self.speed

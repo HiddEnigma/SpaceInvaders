@@ -10,12 +10,14 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=position)
 
         self.speed = player_speed
-        self.health = 3
         self.x_constraint = screen_width
 
         self.ready_to_shoot = True
         self.time_to_shoot = 0
         self.shooting_cooldown = 600
+
+        self.bullet_sound = pygame.mixer.Sound("audio/bullet.wav")
+        self.bullet_sound.set_volume(0.1)
 
         self.bullets = pygame.sprite.Group()
 
@@ -45,6 +47,7 @@ class Player(pygame.sprite.Sprite):
         self.time_to_shoot = pygame.time.get_ticks()
 
         self.bullets.add(Bullet(self.rect.center, -8, self.rect.bottom))
+        self.play_sound()
 
     def reload(self):
         if not self.ready_to_shoot:
@@ -53,8 +56,9 @@ class Player(pygame.sprite.Sprite):
             if (current_time - self.time_to_shoot) >= self.shooting_cooldown:
                 self.ready_to_shoot = True
 
-    def is_damaged(self):
-        self.health -= 1
+    def play_sound(self):
+        self.bullet_sound.play()
+
 
     def update(self):
         self.get_input()
