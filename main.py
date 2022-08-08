@@ -177,10 +177,13 @@ class Game:
         screen.blit(score, (10, -5))
 
     def display_defeat(self):
-        defeat_surface = self.score_font.render("You fought valiantly. Better luck next time...", False, "white")
-        defeat_rectangle = defeat_surface.get_rect(center=(screen_width / 2, screen_height / 2))
-
-        screen.blit(defeat_surface, defeat_rectangle)
+        defeat_message = "You fought valiantly.\nBetter luck next trial...\nEscape to leave.\nR to return...".splitlines()
+        for i, l in enumerate(defeat_message):
+            screen.blit(self.score_font.render(l, 0, "white"), (screen_width / 4.5, screen_height / 3.5 + (30 * i)))
+        # defeat_surface = self.score_font.render("You fought valiantly. Better luck next time...", False, "white")
+        # defeat_rectangle = defeat_surface.get_rect(center=(screen_width / 2, screen_height / 2))
+        #
+        # screen.blit(defeat_surface, defeat_rectangle)
 
     def run(self):
         if self.player_health > 0:

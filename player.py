@@ -39,7 +39,7 @@ class Player(pygame.sprite.Sprite):
                 return
             else:
                 self.rect.x -= self.speed
-        elif keys[pygame.K_SPACE] and self.ready_to_shoot:
+        elif (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.ready_to_shoot:
             self.shoot()
 
     def shoot(self):
